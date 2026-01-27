@@ -1,85 +1,44 @@
-name: Classroom Autograding
+# Autograding configuration for GitHub Classroom
+# - Detect presence of pom.xml (80 points)
+# - Copy the provided autograder test into the project's test sources
+# - Run `mvn test` and award remaining points if tests pass
 
-on:
-  push:
-  pull_request:
+# This file is intentionally simple and explicit so the autograder or a
+# custom script can parse and execute the listed steps.
+assignment:
+  name: "new project"
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+autograding:
+  grading:
+    max_points: 100
 
-      - name: Set up Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
+  checks:
+    - name: "has_pom_xml"
+      description: "Repository contains a pom.xml"
+      points: 80
+      run: |
+        if [ -f pom.xml ]; then
+          echo "OK"; exit 0
+        else
+          echo "Missing pom.xml"; exit 1
+        fi
 
-      - name: Detect project structure
-        id: detect
-        shell: bash
-        run: |
-          set -euo pipefail
+  steps:
+    - name: "copy_autograder_test"
+      description: "Copy MainSignatureTest into src/test/java so it runs as part of mvn test"
+      run: |
+        mkdir -p src/test/java/mcon364/las/touro/edu
+        cp .github/autograding_tests/mcon364/las/touro/edu/MainSignatureTest.java src/test/java/mcon364/las/touro/edu/
 
-          if [ -f pom.xml ]; then
-            echo "has_pom=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_pom=false" >> "$GITHUB_OUTPUT"
-          fi
+    - name: "run_maven_tests"
+      description: "Run the project's unit tests with Maven; if they pass award remaining points"
+      run: |
+        mvn -q -DskipTests=false test
+      points_on_success: 20
 
-          if [ -d src/main/java ]; then
-            echo "has_src=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_src=false" >> "$GITHUB_OUTPUT"
-          fi
+# Notes for graders:
+# - The autograder should first execute the `has_pom_xml` check. If it succeeds,
+#   award 80 points. Then run the `copy_autograder_test` step to ensure the
+#   test is available in the test source tree, and then run `run_maven_tests`.
+# - If `run_maven_tests` succeeds (exit 0) award the remaining 20 points.
 
-      - name: Copy autograding tests into src/test/java
-        if: steps.detect.outputs.has_pom == 'true'
-        shell: bash
-        run: |
-          mkdir -p src/test/java
-          cp -R .github/autograding_tests/* src/test/java/
-
-      - name: Run unit tests
-        id: unit
-        if: steps.detect.outputs.has_pom == 'true'
-        shell: bash
-        env:
-          USER_NAME: Alice
-        run: |
-          set +e
-          mvn -B -ntp test
-          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Compute score
-        id: score
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          SCORE=0
-
-          if [ "${{ steps.detect.outputs.has_pom }}" = "true" ]; then
-            # Default for Maven project present but tests failing or not run.
-            SCORE=80
-            # If unit tests ran and succeeded, full credit.
-            if [ "${{ steps.unit.outputs.exit_code || '1' }}" = "0" ]; then
-              SCORE=100
-            fi
-          fi
-
-          echo "score=$SCORE" >> "$GITHUB_OUTPUT"
-          echo "Final score: $SCORE"
-
-      - name: Report grade to GitHub Classroom
-        if: always()
-        uses: classroom-resources/autograding-grading-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          test-name: maven-unit-tests
-          points: ${{ steps.score.outputs.score }}
-          max-points: 100

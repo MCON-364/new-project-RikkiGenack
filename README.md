@@ -5,11 +5,11 @@ This repository is intentionally **mostly empty**.
 
 ## Your job (students)
 1. Create a **new Maven project** in IntelliJ **inside this repo folder** (repo root).
-2. Use this package for your Main class:
+2. Use this package for your mcon364.touro.edu.Main class:
 
-`src/main/java/las/touro/edu/demo/Main.java`
+`src/main/java/las/touro/edu/demo/mcon364.touro.edu.Main.java`
 
-3. In `Main`, create a **static** method:
+3. In `mcon364.touro.edu.Main`, create a **static** method:
 
 ```java
 public static java.util.Optional<String> getUserName()
