@@ -1,13 +1,14 @@
 package mcon364.las.touro.edu;
 
+import java.util.List;
 import java.util.Optional;
 
 public class Main {
-    static Optional<String> getUserName(String envVar) {
+    public static Optional<String> getUserName(String envVar) {
         var userName = System.getenv(envVar);
         return Optional.ofNullable(userName);
     }
-    static String getGreeting(String envVar) {
+    public static String getGreeting(String envVar) {
         var userNameOpt = getUserName(envVar);
         var builder = new StringBuilder("Hello, ");
         userNameOpt.ifPresentOrElse(
@@ -17,7 +18,21 @@ public class Main {
         return builder.toString();
     }
 
+    public static void processValues(List<List<Integer>> data){
+        cont: for (List<Integer> li: data){
+            for (Integer i : li){
+                if (i == 0){
+                    continue cont;
+                }
+                if (i == 99){
+                    break cont;
+                }
+
+            }
+        }
+    }
+
     public static void main(String[] args) {
-        getGreeting("USER");
+        getGreeting("USERNAME");
     }
 }

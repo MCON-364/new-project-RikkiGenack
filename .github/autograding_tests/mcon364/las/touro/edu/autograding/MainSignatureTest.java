@@ -18,7 +18,7 @@ public class MainSignatureTest {
      * - Method: public static Optional<String> getUserName()
      *
      * Behavior (in autograder):
-     * - The environment variable USER is set (e.g., "Chana")
+     * - The environment variable USERNAME is set (e.g., "Chana")
      * - getUserName() must return Optional.of(the env value)
      */
     @Test
@@ -41,19 +41,19 @@ public class MainSignatureTest {
      */
     @Test
     void getUserName_returns_student_name_env_var_when_present() throws Exception {
-        String expected = System.getenv("USER");
-        assertNotNull(expected, "Autograder misconfigured: USER env var must be set");
-        assertFalse(expected.isBlank(), "Autograder misconfigured: USER must be non-blank");
+        String expected = System.getenv("USERNAME");
+        assertNotNull(expected, "Autograder misconfigured: USERNAME env var must be set");
+        assertFalse(expected.isBlank(), "Autograder misconfigured: USERNAME must be non-blank");
 
         Class<?> clazz = Class.forName("mcon364.las.touro.edu.Main");
         Method m = clazz.getDeclaredMethod("getUserName", String.class);
 
         @SuppressWarnings("unchecked")
-        Optional<String> result = (Optional<String>) m.invoke(null, "USER");
+        Optional<String> result = (Optional<String>) m.invoke(null, "USERNAME");
 
         assertNotNull(result, "getUserName must not return null");
-        assertTrue(result.isPresent(), "Expected Optional.of(USER) when USER is set");
-        assertEquals(expected, result.get(), "getUserName must return the exact value of USER");
+        assertTrue(result.isPresent(), "Expected Optional.of(USERNAME) when USERNAME is set");
+        assertEquals(expected, result.get(), "getUserName must return the exact value of USERNAME");
     }
 
     /**
@@ -90,17 +90,17 @@ public class MainSignatureTest {
      */
     @Test
     void getGreeting_returns_personalized_greeting_when_env_var_present() throws Exception {
-        String userName = System.getenv("USER");
-        assertNotNull(userName, "USER env var must be set for this test");
+        String userName = System.getenv("USERNAME");
+        assertNotNull(userName, "USERNAME env var must be set for this test");
 
         Class<?> clazz = Class.forName("mcon364.las.touro.edu.Main");
         Method m = clazz.getDeclaredMethod("getGreeting", String.class);
 
-        String result = (String) m.invoke(null, "USER");
+        String result = (String) m.invoke(null, "USERNAME");
 
         assertNotNull(result, "getGreeting must not return null");
         assertTrue(result.contains(userName),
-            "Greeting should contain the username: expected to contain '" + userName + "', but got '" + result + "'");
+                "Greeting should contain the username: expected to contain '" + userName + "', but got '" + result + "'");
     }
 
     /**
@@ -115,7 +115,7 @@ public class MainSignatureTest {
 
         assertNotNull(result, "getGreeting must not return null");
         assertTrue(result.contains("Guest") || result.contains("World"),
-            "Greeting should contain 'Guest' or 'World' when env var not present, but got: " + result);
+                "Greeting should contain 'Guest' or 'World' when env var not present, but got: " + result);
     }
 
     /**
@@ -141,13 +141,13 @@ public class MainSignatureTest {
         Method m = clazz.getDeclaredMethod("processValues", List.class);
 
         List<List<Integer>> testData = List.of(
-            List.of(1, 2, 3),
-            List.of(4, 5, 6)
+                List.of(1, 2, 3),
+                List.of(4, 5, 6)
         );
 
         // Should not throw any exception
         assertDoesNotThrow(() -> m.invoke(null, testData),
-            "processValues should execute without throwing exceptions");
+                "processValues should execute without throwing exceptions");
     }
 
     /**
@@ -160,22 +160,22 @@ public class MainSignatureTest {
 
         // Test with 0 (should trigger labeled continue)
         List<List<Integer>> testDataWithZero = List.of(
-            List.of(1, 2, 3),
-            List.of(4, 0, 6),
-            List.of(7, 8, 9)
+                List.of(1, 2, 3),
+                List.of(4, 0, 6),
+                List.of(7, 8, 9)
         );
 
         assertDoesNotThrow(() -> m.invoke(null, testDataWithZero),
-            "processValues should handle 0 values with labeled continue");
+                "processValues should handle 0 values with labeled continue");
 
         // Test with 99 (should trigger labeled break)
         List<List<Integer>> testDataWithNinetyNine = List.of(
-            List.of(1, 2, 3),
-            List.of(4, 99, 6),
-            List.of(7, 8, 9)
+                List.of(1, 2, 3),
+                List.of(4, 99, 6),
+                List.of(7, 8, 9)
         );
 
         assertDoesNotThrow(() -> m.invoke(null, testDataWithNinetyNine),
-            "processValues should handle 99 values with labeled break");
+                "processValues should handle 99 values with labeled break");
     }
 }
