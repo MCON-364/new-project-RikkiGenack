@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package mcon364.las.touro.edu;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -15,3 +16,6 @@ public class Main {
         }
     }
 }
+=======
+//placeholder
+>>>>>>> 85aff6e0018a5bf8f62edc1812751bf19d8c2cd1
